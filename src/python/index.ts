@@ -1,17 +1,21 @@
-import { parsePython, runPythonScript } from "../utils/PythonScript";
+import { runPythonScript, spawnPythonScript } from "../utils/PythonScript";
 
-/**
- * < 100 means the soil is dry
- * > 100 means the moisture is moist
- */
 export async function getMoisture(): Promise<number> {
-  return Number(await runPythonScript("main", "get_moisture_analog"));
+  return (await runPythonScript("main", "get_moisture_analog")) as number;
 }
 
-/**
- * > 60 humidity is high
- * < 60 humidity is low
- */
 export async function getHumidity() {
-  return Number(await runPythonScript("main", "get_humidity"));
+  return (await runPythonScript("main", "get_humidity")) as number;
+}
+
+export function startMotor() {
+  return spawnPythonScript("motor", "start_motor");
+}
+
+export function stopMotor() {
+  return spawnPythonScript("motor", "stop_motor");
+}
+
+export async function isMotorActive() {
+  return (await runPythonScript("motor", "is_motor_active")) as boolean;
 }

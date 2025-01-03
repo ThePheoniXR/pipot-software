@@ -15,6 +15,8 @@
 # humidity_sensor = Adafruit_DHT.DHT11
 # humidity_pin = 4
 
+# # Motor 
+
 # bus = SMBus(1)
 
 # def read_analog(channel):

@@ -131,3 +131,7 @@ dist
 
 # Python
 __pycache__
+
+# Additional
+start.txt
+stop.txt
