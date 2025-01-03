@@ -1,15 +1,17 @@
 import express from "express";
+
 import { WebSocketServer } from "ws";
-import { WebSocketI } from "./types/types";
+import { STATES, WebSocketI, WebSocketRecievingData } from "./types/types";
+
+import { HEARTBEAT_INTREVAL, PORT, UPDATE_RATE } from "./constants";
+
+import { globalState } from "./utils/StatesManager";
+import { changeEvent } from "./events/changeEvent";
+
 import path from "path";
 import http from "http";
-import { getHumidity, getMoisture } from "./python/index";
-import dotenv from "dotenv";
-dotenv.config();
 
-const PORT = process.env.PORT || 8080;
-const HEARTBEAT_INTREVAL = Number(process.env.HEARTBEAT_INTREVAL) || 30000;
-const UPDATE_RATE = Number(process.env.UPDATE_RATE) || 3000;
+import { updateEvent } from "./events/updateEvent";
 
 const app = express();
 const server = http.createServer(app);
@@ -25,6 +27,22 @@ app.get("/", (req, res) => {
   res.status(200).render("index");
 });
 
+app.get("/get_state", (req, res) => {
+  res.status(200).json({ state: globalState.get() });
+});
+
+app.post("/stop_gradiation", (req, res) => {
+  globalState.set(STATES.IDLE);
+
+  res.sendStatus(201);
+});
+
+app.post("/start_gradiation", (req, res) => {
+  globalState.set(STATES.GRADIENT);
+
+  res.sendStatus(201);
+});
+
 wss.on("connection", (ws: WebSocketI) => {
   console.log("Connected");
 
@@ -33,7 +51,21 @@ wss.on("connection", (ws: WebSocketI) => {
   ws.on("pong", () => {
     ws.isAlive = true;
   });
+
+  ws.on("message", (data: WebSocketRecievingData) => {
+    if (data.type == "BUTTON_CLICK_START") globalState.set(STATES.BUTTON);
+
+    if (data.type == "BUTTON_CLICK_STOP") {
+      globalState.set(STATES.IDLE);
+    }
+  });
+
+  setInterval(() => updateEvent(wss), UPDATE_RATE);
 });
+
+globalState.subscribe((newState, oldState) =>
+  changeEvent(newState, oldState, wss)
+);
 
 // Ping message
 const heartbeat = setInterval(function ping() {
@@ -45,40 +77,8 @@ const heartbeat = setInterval(function ping() {
   });
 }, HEARTBEAT_INTREVAL);
 
-const tickInterval = setInterval(async () => {
-  const humidity = await getHumidity();
-  const moisture = await getMoisture();
-
-  const moisturePercentage = moisture / 10.23;
-
-  console.log(waterChecks(moisturePercentage, humidity));
-
-  wss.clients.forEach((ws) => {
-    ws.send(
-      JSON.stringify({ humidity: humidity, moisture: moisturePercentage })
-    );
-  });
-}, UPDATE_RATE);
-
-function waterChecks(moisture: number, humidity: number): boolean {
-  if (moisture <= 30) {
-    return true;
-  }
-
-  if (humidity >= 90) return false;
-
-  if (moisture >= 80) {
-    return false;
-  } else if (moisture < 80) {
-    return true;
-  }
-
-  return false;
-}
-
 wss.on("close", () => {
   clearInterval(heartbeat);
-  clearInterval(tickInterval);
 });
 
 wss.on("listening", () => console.log("WebSocket server started."));

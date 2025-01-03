@@ -1,13 +1,13 @@
 import { spawn } from "child_process";
 import path from "path";
 
+const cwdPath = path.join(__dirname, "..", "python");
+
 export function runPythonScript(
   fileName: string,
   functionName: string
 ): Promise<boolean | number | string | undefined> {
   return new Promise((resolve, reject) => {
-    const cwdPath = path.join(__dirname, "..", "python");
-
     const pythonProcess = spawn(
       "python",
       ["-u", "-c", `import ${fileName}; ${fileName}.${functionName}()`],
@@ -35,6 +35,26 @@ export function runPythonScript(
       }
       resolve(parsePython(output.trim()));
     });
+  });
+}
+
+export function spawnPythonScript(
+  fileName: string,
+  functionName: string
+): Promise<void> {
+  return new Promise((resolve) => {
+    const pythonProcess = spawn(
+      "python",
+      ["-u", "-c", `import ${fileName}; ${fileName}.${functionName}()`],
+      {
+        cwd: cwdPath,
+        detached: true,
+        stdio: "ignore",
+      }
+    );
+
+    pythonProcess.unref();
+    resolve();
   });
 }
 

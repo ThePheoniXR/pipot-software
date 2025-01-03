@@ -1,6 +1,5 @@
 gpiozero
 Adafruit_DHT
 smbus2
-adafruit-circuitpython-dht
 setuptools 
 wheel
