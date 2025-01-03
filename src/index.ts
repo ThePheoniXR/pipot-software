@@ -3,12 +3,13 @@ import { WebSocketServer } from "ws";
 import { WebSocketI } from "./types/types";
 import path from "path";
 import http from "http";
+import { getHumidity, getMoisture } from "./python/index";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 const PORT = process.env.PORT || 8080;
 const HEARTBEAT_INTREVAL = Number(process.env.HEARTBEAT_INTREVAL) || 30000;
+const UPDATE_RATE = Number(process.env.UPDATE_RATE) || 3000;
 
 const app = express();
 const server = http.createServer(app);
@@ -35,7 +36,7 @@ wss.on("connection", (ws: WebSocketI) => {
 });
 
 // Ping message
-const interval = setInterval(function ping() {
+const heartbeat = setInterval(function ping() {
   wss.clients.forEach((ws: any) => {
     if (ws.isAlive === false) return ws.terminate();
 
@@ -44,8 +45,40 @@ const interval = setInterval(function ping() {
   });
 }, HEARTBEAT_INTREVAL);
 
+const tickInterval = setInterval(async () => {
+  const humidity = await getHumidity();
+  const moisture = await getMoisture();
+
+  const moisturePercentage = moisture / 10.23;
+
+  console.log(waterChecks(moisturePercentage, humidity));
+
+  wss.clients.forEach((ws) => {
+    ws.send(
+      JSON.stringify({ humidity: humidity, moisture: moisturePercentage })
+    );
+  });
+}, UPDATE_RATE);
+
+function waterChecks(moisture: number, humidity: number): boolean {
+  if (moisture <= 30) {
+    return true;
+  }
+
+  if (humidity >= 90) return false;
+
+  if (moisture >= 80) {
+    return false;
+  } else if (moisture < 80) {
+    return true;
+  }
+
+  return false;
+}
+
 wss.on("close", () => {
-  clearInterval(interval);
+  clearInterval(heartbeat);
+  clearInterval(tickInterval);
 });
 
 wss.on("listening", () => console.log("WebSocket server started."));
