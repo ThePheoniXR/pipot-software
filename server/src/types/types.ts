@@ -10,6 +10,14 @@ export enum STATES {
   IDLE = "idle",
 }
 
+export enum EVENTS {
+  BUTTON_CLICK_START = "BUTTON_CLICK_START",
+  BUTTON_CLICK_STOP = "BUTTON_CLICK_STOP",
+  TICK = "TICK",
+  STATE_CHANGE = "STATE_CHANGE",
+}
+
 export interface WebSocketRecievingData {
-  type: "BUTTON_CLICK_START" | "BUTTON_CLICK_STOP";
+  type: EVENTS;
+  [key: string]: any;
 }

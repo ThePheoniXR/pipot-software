@@ -24,8 +24,5 @@ def stop_motor():
     with open("stop.txt", "w") as file:
         file.write(str(now))
 
-def is_motor_active():
-    print(False)
-
 if __name__ == "__main__":
     start_motor()

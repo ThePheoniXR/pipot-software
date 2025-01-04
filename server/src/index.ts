@@ -1,57 +1,68 @@
 import express from "express";
 
 import { WebSocketServer } from "ws";
-import { STATES, WebSocketI, WebSocketRecievingData } from "./types/types";
+import {
+  EVENTS,
+  STATES,
+  WebSocketI,
+  WebSocketRecievingData,
+} from "./types/types";
 
-import { HEARTBEAT_INTREVAL, PORT, UPDATE_RATE } from "./constants";
+import { HEARTBEAT_INTREVAL, SERVER_PORT, UPDATE_RATE } from "./constants";
 
 import { globalState } from "./utils/StatesManager";
 import { changeEvent } from "./events/changeEvent";
 
 import http from "http";
+import cors from "cors";
 
 import { updateEvent } from "./events/updateEvent";
 
 const app = express();
 const server = http.createServer(app);
-
 const wss = new WebSocketServer({ server });
+
+app.use(cors());
 
 app.get("/get_state", (req, res) => {
   res.status(200).json({ state: globalState.get() });
 });
 
-app.post("/stop_gradiation", (req, res) => {
-  globalState.set(STATES.IDLE);
-
-  res.sendStatus(201);
-});
-
-app.post("/start_gradiation", (req, res) => {
+app.post("/start_gradientation", (req, res) => {
   globalState.set(STATES.GRADIENT);
 
   res.sendStatus(201);
 });
 
-wss.on("connection", (ws: WebSocketI) => {
-  console.log("Connected");
+app.post("/stop_gradientation", (req, res) => {
+  globalState.set(STATES.IDLE);
 
+  res.sendStatus(201);
+});
+
+wss.on("connection", (ws: WebSocketI) => {
   ws.isAlive = true;
   ws.on("error", console.error);
   ws.on("pong", () => {
     ws.isAlive = true;
   });
 
-  ws.on("message", (data: WebSocketRecievingData) => {
-    if (data.type == "BUTTON_CLICK_START") globalState.set(STATES.BUTTON);
+  ws.on("message", (rawData) => {
+    const data: WebSocketRecievingData = JSON.parse(rawData.toString());
 
-    if (data.type == "BUTTON_CLICK_STOP") {
-      globalState.set(STATES.IDLE);
-    }
+    if (data.type == EVENTS.BUTTON_CLICK_START) globalState.set(STATES.BUTTON);
+
+    if (data.type == EVENTS.BUTTON_CLICK_STOP) globalState.set(STATES.IDLE);
   });
 
   setInterval(() => updateEvent(wss), UPDATE_RATE);
 });
+
+export function broadcastMessage(message: WebSocketRecievingData): void {
+  wss.clients.forEach((ws) => {
+    ws.send(JSON.stringify(message));
+  });
+}
 
 globalState.subscribe((newState, oldState) =>
   changeEvent(newState, oldState, wss)
@@ -72,4 +83,6 @@ wss.on("close", () => {
 });
 
 wss.on("listening", () => console.log("WebSocket server started."));
-server.listen(PORT, () => console.log("Server started on port: " + PORT));
+server.listen(SERVER_PORT, () =>
+  console.log("Server started on port: " + SERVER_PORT)
+);

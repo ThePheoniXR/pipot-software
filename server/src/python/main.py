@@ -49,4 +49,4 @@ def get_moisture_analog():
     print(613.8)
 
 def get_humidity(): 
-    print(90)
+    print(50)

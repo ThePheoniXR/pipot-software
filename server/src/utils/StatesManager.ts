@@ -3,7 +3,7 @@ import { STATES } from "../types/types";
 type StateChangeCallback = (newState: STATES, oldState: STATES) => void;
 
 class StateManager {
-  private state: STATES = STATES.GRADIENT;
+  private state: STATES = STATES.IDLE;
   private subscribers: StateChangeCallback[] = [];
 
   set(state: STATES) {
