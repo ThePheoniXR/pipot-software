@@ -1,7 +1,9 @@
 import { WebSocketServer } from "ws";
-import { getHumidity, getMoisture, startMotor, stopMotor } from "../python";
-import { STATES } from "../types/types";
+import { getHumidity, getMoisture } from "../utils/Scripts";
+import { EVENTS, STATES } from "../types/types";
 import { checkGradientConditions } from "../utils/StatesManager";
+import { broadcastMessage } from "..";
+import { motor } from "../utils/Motor";
 
 export async function changeEvent(
   newState: STATES,
@@ -13,31 +15,27 @@ export async function changeEvent(
 
   const moisturePercentage = moisture / 10.23;
 
-  wss.clients.forEach((ws) => {
-    ws.send(
-      JSON.stringify({
-        type: "STATE_CHANGE",
-        newState: newState,
-        oldState: oldState,
-      })
-    );
+  broadcastMessage({
+    type: EVENTS.STATE_CHANGE,
+    newState: newState,
+    oldState: oldState,
   });
 
   switch (newState) {
     case STATES.IDLE:
-      stopMotor();
+      motor.stop();
       break;
     case STATES.GRADIENT:
       if (
         checkGradientConditions(moisturePercentage, humidity) &&
         oldState == STATES.IDLE
       ) {
-        startMotor();
+        motor.start();
       }
       break;
     case STATES.BUTTON:
       if (oldState == STATES.IDLE) {
-        startMotor();
+        motor.start();
       }
       break;
   }
