@@ -8,7 +8,6 @@ import { HEARTBEAT_INTREVAL, PORT, UPDATE_RATE } from "./constants";
 import { globalState } from "./utils/StatesManager";
 import { changeEvent } from "./events/changeEvent";
 
-import path from "path";
 import http from "http";
 
 import { updateEvent } from "./events/updateEvent";
@@ -17,15 +16,6 @@ const app = express();
 const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
-
-app.use(express.static(path.join(__dirname, "public")));
-
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
-
-app.get("/", (req, res) => {
-  res.status(200).render("index");
-});
 
 app.get("/get_state", (req, res) => {
   res.status(200).json({ state: globalState.get() });
