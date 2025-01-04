@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+
+dotenv.config({ path: path.join(__dirname, "../..", ".env") });
 
 export const PORT = process.env.PORT || 8080;
 export const HEARTBEAT_INTREVAL =
