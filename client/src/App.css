@@ -1,8 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@font-face {
+  font-family: "Inter";
+  src: local("Inter"), url(./fonts/Inter.ttf) format("truetype");
+}
 
 * {
   margin: 0;
   padding: 0;
+  font-family: "Inter", serif;
 }
 
 #screen {
@@ -13,30 +17,27 @@
 
 #header {
   position: absolute;
-  color: #1db9ff;
-  font-size: 40px;
-  font-family: "Inter", serif;
+  color: #007aff;
+  font-size: 60px;
   font-weight: 900;
-  margin-top: 68px;
-  margin-left: 15px;
+  margin-top: 30px;
+  margin-left: 120px;
 }
 
 #phrase {
   position: absolute;
   color: white;
   font-size: 24px;
-  font-family: "Inter", serif;
   font-weight: 900;
   margin-top: 129px;
   margin-left: 15px;
 }
 
-#image {
+img {
   position: absolute;
   height: 145px;
   width: 133px;
   background-size: cover;
-  background-image: url(flower.png);
   margin-top: 128px;
   margin-left: 248px;
 }
@@ -52,11 +53,18 @@
 
 .infoBox {
   font-size: 15px;
-  font-family: Arial, Helvetica, sans-serif;
   font-weight: bold;
   color: white;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
-  background-color: #2e2e50;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   height: 105px;
   width: 107px;
   text-align: center;
@@ -69,85 +77,88 @@
 
 .infoBox i {
   font-size: 2.5rem;
-  color: #1db9ff;
+  color: #007aff;
   margin-bottom: 8px;
 }
 
 .placeholder {
-  color: #1eb0fa;
+  color: #007aff;
   font-size: 15px;
   font-weight: bold;
-  font-family: "Inter", serif;
 }
 
 #time {
   font-size: 13px;
 }
 
-#scaleContainer {
+#barContainer {
   margin-top: 360px;
   display: flex;
   justify-content: center;
-}
-
-.scaleWrapper {
-  position: relative;
-  width: 350px;
-  text-align: center;
-}
-#indicator {
-  position: absolute;
-  top: -15px;
-  font-size: 18px;
-  color: #f5a623;
-}
-
-.scale {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  background-color: #2e2e50;
+}
+
+#progressTrack {
+  appearance: none;
+  width: 298px;
+  height: 10px;
+  background-color: #787880;
   border-radius: 8px;
-  height: 35px;
-  padding: 0 10px;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
+  overflow: hidden;
+  border: none;
 }
 
-.scale span {
-  flex: 1;
-  text-align: center;
+#progressTrack::-moz-progress-bar {
+  background-color: #787880;
+  border-radius: 8px;
+}
+#progressTrack::-webkit-progress-value {
+  background-color: #007aff;
+  border-radius: 8px 0 0 8px;
+}
+#progressTrack::-moz-progress-bar {
+  background-color: #007aff;
+  border-radius: 8px 0 0 8px;
 }
 
-#waterPlant {
+#progressPercent {
+  position: relative;
+  color: #1eb0fa;
+  font-size: 15px;
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+button {
   height: 35px;
   width: 350px;
-  background-color: #f5a623;
-  margin-top: 65px;
   margin-left: 20px;
   border-radius: 8px;
   border: none;
-  color: #2e2e50;
-  font-family: Arial, Helvetica, sans-serif;
   font-size: 13px;
   font-weight: bold;
+}
+
+#waterPlant {
+  margin-top: 40px;
+  color: #1e1e2f;
+  background-color: #f5a623;
+}
+
+#irrigation {
+  background: linear-gradient(135deg, #ff9f43, #ff7843);
+  margin-top: 30px;
+  color: #2e2e50;
 }
 
 #waterPlant:active {
   background-color: rgb(205, 201, 201);
 }
 
-#irrigation {
-  height: 35px;
-  width: 350px;
-  background: linear-gradient(135deg, #ff9f43, #ff7843);
-  margin-top: 30px;
-  margin-left: 20px;
-  border-radius: 8px;
-  border: none;
-  color: #2e2e50;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 13px;
-  font-weight: bold;
+#alert {
+  position: relative;
+  color: white;
+  font-size: 14px;
+  margin-left: 75px;
+  top: 80px;
 }

@@ -3,6 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { EVENTS, STATES, WebSocketRecievingData } from "./types";
 import { timeAgo } from "./util/timeAgo";
 import { InfoBox } from "./components/InfoBox";
+
+import flowerPng from "./assets/flower.png";
+import clockSvg from "./assets/clock.svg";
+import dropletSvg from "./assets/droplet.svg";
+import seedlingSvg from "./assets/seedling.svg";
+
 import "./App.css";
 
 function App() {
@@ -33,7 +39,9 @@ function App() {
     lastWatered: "Not started",
   });
 
+  const [showAlert, setShowAlert] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
+
   const holdTimer = useRef<NodeJS.Timeout | null>(null);
 
   function startButtonClick() {
@@ -53,6 +61,11 @@ function App() {
         type: EVENTS.BUTTON_CLICK_STOP,
       });
       setIsHolding(false);
+    } else {
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2000);
     }
   }
 
@@ -93,30 +106,39 @@ function App() {
       <h1 id="header">πPot</h1>
       <p id="phrase">
         {" "}
-        A smart way to <br /> care and preserve <br /> your plant
+        A smart way to <br /> care and nurture <br /> your plant
       </p>
-      <div id="image"></div>
+      <img src={flowerPng} alt="flower image" />
       <div id="infoContainer">
         <InfoBox
-          icon="fas fa-tint"
+          icon={dropletSvg}
           label="Humidity"
           value={`${plantData.humidity} %`}
         />
         <InfoBox
-          icon="fas fa-seedling"
+          icon={seedlingSvg}
           label="Moisture"
           value={`${plantData.moisture} %`}
         />
         <InfoBox
-          icon="fas fa-clock"
+          icon={clockSvg}
           label="Last Watered"
           value={plantData.lastWatered}
         />
       </div>
-      <div id="scaleContainer">
-        <div className="scaleWrapper"></div>
+      <div id="barContainer">
+        <progress
+          id="progressTrack"
+          max="100"
+          value={plantData.moisture}
+        ></progress>
+        <p id="progressPercent">{plantData.moisture}%</p>
       </div>
-      <input
+      <button id="irrigation" type="submit" onClick={toggleGradientation}>
+        {(plantData.state === STATES.GRADIENT ? "Stop" : "Start") +
+          " continuous supply"}
+      </button>
+      <button
         id="waterPlant"
         type="submit"
         value="Water The Plant"
@@ -124,16 +146,12 @@ function App() {
         onTouchEnd={stopButtonClick}
         onMouseDown={startButtonClick}
         onMouseUp={stopButtonClick}
-      />
-      <input
-        id="irrigation"
-        type="submit"
-        value={
-          (plantData.state === STATES.GRADIENT ? "Stop" : "Start") +
-          " continuous supply"
-        }
-        onClick={toggleGradientation}
-      />
+      >
+        Water The Plant
+      </button>
+      {showAlert && (
+        <span id="alert">Please hold the button to pour water!</span>
+      )}
     </div>
   );
 }

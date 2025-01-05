@@ -9,7 +9,8 @@ export function InfoBox({
 }) {
   return (
     <div className="infoBox">
-      <i className={icon}></i>
+      {/* <i className={icon}></i> */}
+      <img src={icon} />
       <p>{label}</p>
       <p className="placeholder">{value}</p>
     </div>
