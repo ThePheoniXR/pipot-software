@@ -12,7 +12,7 @@ import seedlingSvg from "./assets/seedling.svg";
 import "./App.css";
 
 function App() {
-  const BASE_URL = `localhost:${process.env.PORT}`;
+  const BASE_URL = `${window.location.hostname}:${process.env.PORT || 8080}`;
   const HEARTBEAT_INTERVAL = Number(process.env.HEARTBEAT_INTERVAL);
 
   const { lastJsonMessage, sendJsonMessage } = useWebSocket(
@@ -37,6 +37,7 @@ function App() {
     lastActive: null as number | null,
     state: STATES.IDLE,
     lastWatered: "Not started",
+    gradientPercentage: 0
   });
 
   const [showAlert, setShowAlert] = useState(false);
@@ -92,13 +93,15 @@ function App() {
     if (message && message.type === EVENTS.TICK) {
       setPlantData((prev) => ({
         ...prev,
-        humidity: message.humidity,
+        humidity: message.humidity ? message.humidity : plantData.humidity,
         moisture: message.moisture,
         state: message.state,
         lastActive: message.lastActive || prev.lastActive,
         lastWatered: updateLastWatered(message),
-      }));
+        gradientPercentage: message.gradientPercentage
+      })); 
     }
+    console.log(plantData)
   }, [lastJsonMessage]);
 
   return (
@@ -130,9 +133,9 @@ function App() {
         <progress
           id="progressTrack"
           max="100"
-          value={plantData.moisture}
+          value={plantData.gradientPercentage}
         ></progress>
-        <p id="progressPercent">{plantData.moisture}%</p>
+        <p id="progressPercent">{plantData.gradientPercentage}%</p>
       </div>
       <button id="irrigation" type="submit" onClick={toggleGradientation}>
         {(plantData.state === STATES.GRADIENT ? "Stop" : "Start") +

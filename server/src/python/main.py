@@ -2,7 +2,6 @@ import adafruit_dht
 import board
 from smbus2 import SMBus
 
-dhtDevice = adafruit_dht.DHT11(board.D26) # For humidity 
 
 # I2C address of PCF8591
 PCF8591_ADDRESS = 0x48
@@ -18,8 +17,14 @@ def read_moisture():
     return moisture_level
 
 def get_humidity():
-    humidity = dhtDevice.humidity
-    print(humidity)
+    try:
+        dhtDevice = adafruit_dht.DHT11(board.D26) # For humidity 
+        humidity = dhtDevice.humidity
+        print(humidity)
+        dhtDevice.exit()  
+    except RuntimeError as error:
+        print()
+
 
 def get_moisture(): 
     moisture = read_moisture()

@@ -7,7 +7,7 @@
 #     # motor.value  speed apparently 
 
 # def stop_motor():
-#     motor.forward()
+#     motor.stop()
 
 # def is_motor_active():
 #     return motor.is_active
@@ -23,6 +23,3 @@ def start_motor():
 def stop_motor():
     with open("stop.txt", "w") as file:
         file.write(str(now))
-
-if __name__ == "__main__":
-    start_motor()
