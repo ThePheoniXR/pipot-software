@@ -83,6 +83,6 @@ wss.on("close", () => {
 });
 
 wss.on("listening", () => console.log("WebSocket server started."));
-server.listen(SERVER_PORT, () =>
+server.listen(SERVER_PORT, "0.0.0.0" as any, () =>
   console.log("Server started on port: " + SERVER_PORT)
 );
