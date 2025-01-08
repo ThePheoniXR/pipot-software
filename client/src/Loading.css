@@ -1,0 +1,56 @@
+@font-face {
+    font-family: "Inter";
+    src: local("Inter"), url(./fonts/Inter.ttf) format("truetype");
+}
+
+* {
+    /* font-family: 'Inter', serif; */
+    padding: 0;
+    margin: 0;
+}
+
+#screen {
+    height: 844px;
+    width: 390px;
+    background-color: #39bded;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 1s ease-in-out;
+}
+
+.pi {
+    font-weight: 400;
+    font-size: 300px;
+    color: white;
+    position: relative;
+    z-index: 1;
+    border-style: 4px solid;
+    border-color: rgb(255, 30, 0);
+    box-sizing: border-box;
+    transition: margin 1s ease-in-out;
+}
+
+.waterFilled {
+    position: absolute;
+    bottom: 0;
+    height: 0;
+    width: 390px;
+    background-color: #1e1e2f;
+    transition: height 3s ease-in-out;
+    z-index: 0;
+
+}
+
+.pot {
+    font-family: 'Inter', serif;
+    position: absolute;
+    color: white;
+    z-index: 1;
+    top: 407px;
+    margin-left: 125px;
+    font-size: 70px;
+    font-weight: 900;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
