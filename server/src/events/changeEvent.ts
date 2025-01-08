@@ -8,12 +8,9 @@ import { motor } from "../utils/Motor";
 export async function changeEvent(
   newState: STATES,
   oldState: STATES,
-  wss: WebSocketServer
 ) {
   const humidity = await getHumidity();
   const moisture = await getMoisture();
-
-  const moisturePercentage = moisture / 10.23;
 
   broadcastMessage({
     type: EVENTS.STATE_CHANGE,
@@ -27,7 +24,7 @@ export async function changeEvent(
       break;
     case STATES.GRADIENT:
       if (
-        checkGradientConditions(moisturePercentage, humidity) &&
+        checkGradientConditions(moisture, humidity) &&
         oldState == STATES.IDLE
       ) {
         motor.start();

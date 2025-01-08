@@ -55,7 +55,7 @@ wss.on("connection", (ws: WebSocketI) => {
     if (data.type == EVENTS.BUTTON_CLICK_STOP) globalState.set(STATES.IDLE);
   });
 
-  setInterval(() => updateEvent(wss), UPDATE_RATE);
+  setInterval(() => updateEvent(), UPDATE_RATE);
 });
 
 export function broadcastMessage(message: WebSocketRecievingData): void {
@@ -65,7 +65,7 @@ export function broadcastMessage(message: WebSocketRecievingData): void {
 }
 
 globalState.subscribe((newState, oldState) =>
-  changeEvent(newState, oldState, wss)
+  changeEvent(newState, oldState)
 );
 
 // Ping message
@@ -83,6 +83,6 @@ wss.on("close", () => {
 });
 
 wss.on("listening", () => console.log("WebSocket server started."));
-server.listen(SERVER_PORT, "0.0.0.0" as any, () =>
-  console.log("Server started on port: " + SERVER_PORT)
+server.listen(SERVER_PORT, '0.0.0.0', () =>
+  console.log(`Server started on port: ${SERVER_PORT}`)
 );
