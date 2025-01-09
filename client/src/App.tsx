@@ -12,8 +12,8 @@ import seedlingSvg from "./assets/seedling.svg";
 import "./App.css";
 
 function App() {
-  const BASE_URL = `localhost:${process.env.PORT}`;
-  const HEARTBEAT_INTERVAL = Number(process.env.HEARTBEAT_INTERVAL);
+  const BASE_URL = `${window.location.hostname}:${process.env.PORT || 8080}`;
+  const HEARTBEAT_INTERVAL = Number(process.env.HEARTBEAT_INTERVAL) | 30000;
 
   const { lastJsonMessage, sendJsonMessage } = useWebSocket(
     `ws://${BASE_URL}`,

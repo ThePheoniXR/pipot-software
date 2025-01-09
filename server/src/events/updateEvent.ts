@@ -5,23 +5,21 @@ import { checkGradientConditions, globalState } from "../utils/StatesManager";
 import { broadcastMessage } from "..";
 import { motor } from "../utils/Motor";
 
-export async function updateEvent(wss: WebSocketServer) {
+export async function updateEvent() {
   const humidity = await getHumidity();
   const moisture = await getMoisture();
-
-  const moisturePercentage = moisture / 10.23;
 
   broadcastMessage({
     type: EVENTS.TICK,
     humidity: Math.round(humidity),
-    moisture: Math.round(moisturePercentage),
+    moisture: Math.round(moisture),
     state: globalState.get(),
     isActive: motor.isActive,
     lastActive: motor.lastActive,
   });
 
   if (globalState.get() == STATES.GRADIENT) {
-    const conditions = checkGradientConditions(moisturePercentage, humidity);
+    const conditions = checkGradientConditions(moisture, humidity);
 
     if (conditions && !motor.isActive) {
       motor.start();
